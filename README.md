@@ -8,7 +8,7 @@ Facts remain in Gbrain. GM's weights learn procedures, calibration, and when to 
 
 It uses **[Gbrain's normal personal installation](https://github.com/garrytan/gbrain)** on each Mac and **[Gbrain's company-brain setup](https://github.com/garrytan/gbrain/blob/master/docs/tutorials/company-brain.md)** on the server. Gbrain owns memory, permissions, revisions, and the company dashboard. GM Nightly Loop focuses on the learning pipeline.
 
-Built for the [Own Your Intelligence hackathon](https://events.ycombinator.com/gbrain-qm-river-memorable-hackathon). The product is **GM Nightly Loop** and its command is `gm-nightly`.
+The product is **GM Nightly Loop** and its command is `gm-nightly`.
 
 **Start here:** [two-minute demo](docs/DEMO.md) · [reproducible sample results](results/sample.json) · [implementation plan](docs/PLAN.md).
 
