@@ -1,0 +1,24 @@
+{
+  "kind": "offline_fixture_curriculum",
+  "trained_model": false,
+  "reproduce": "make setup && make demo",
+  "compiler_version": "2",
+  "pages": 18,
+  "tasks_by_split": {
+    "generalization": 67,
+    "recall": 32,
+    "regression": 12,
+    "train": 32
+  },
+  "tasks_by_kind": {
+    "abstention": 26,
+    "procedure": 27,
+    "recall": 68,
+    "staleness": 10
+  },
+  "checks": {
+    "synthetic_only": true,
+    "real_gbrain_oauth_smoke": "3 fictional teammates; compiled page relay, duplicate retry, cross-employee write rejection",
+    "live_model_improvement": "not yet measured"
+  }
+}

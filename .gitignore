@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.finegrain/
+dist/
+build/
+.env
+*.sqlite*
+finegrain.local.toml
+
+apps/macos/.build/
+finegrain.server.toml
+.DS_Store
