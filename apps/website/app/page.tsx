@@ -1,4 +1,5 @@
 import GrainField from './grain-field';
+import Architecture from './architecture';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -29,13 +30,8 @@ export default function Home() {
           <p><a href={repository}>Explore the repository ↗</a></p>
         </section>
         <section className="section" id="how-it-works" aria-labelledby="loop-title">
-          <h2 id="loop-title">[ From daily work to better models ]</h2>
-          <ol className="steps">
-            <li><span className="step-number">01</span><div><h3>Remember locally.</h3><p>A Mac menu-bar companion reads sessions from Claude, Codex, Pi, and other agents. Selected decisions and conventions are compiled into your normal personal Gbrain.</p></div></li>
-            <li><span className="step-number">02</span><div><h3>Share what belongs to the company.</h3><p>Approved, compiled notes travel to the official company Gbrain. The relay leaves raw session traces on the Mac and uses Gbrain’s own access controls.</p></div></li>
-            <li><span className="step-number">03</span><div><h3>Turn knowledge into a curriculum.</h3><p>A River teacher and independent critic create grounded examples and verifiable tasks. Separate tests check recall, company procedures, changed facts, and knowing when to abstain.</p></div></li>
-            <li><span className="step-number">04</span><div><h3>Train. Test. Earn the upgrade.</h3><p>Run supervised fine-tuning and optional reinforcement learning remotely on River. A candidate becomes the current model only if it passes the improvement and regression checks.</p></div></li>
-          </ol>
+          <h2 id="loop-title">[ Three levels. One learning loop. ]</h2>
+          <Architecture />
           <div className="cadence"><span>Your schedule</span><span>Nightly / weekly / monthly / manual</span></div>
         </section>
         <section className="section" id="start" aria-labelledby="start-title">
