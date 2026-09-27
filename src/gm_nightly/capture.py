@@ -62,7 +62,7 @@ def project_row(row: dict, kind: str, offset: int) -> dict:
             and row.get("item", {}).get("type") == "agent_message"
         ):
             message = {"role": "assistant", "content": row["item"].get("text", "")}
-        elif row.get("type") == "finegrain.user_prompt":
+        elif row.get("type") == "gm.user_prompt":
             message = {"role": "user", "content": row.get("text", "")}
     elif kind in {"pi", "jsonl"} and row.get("type") == "message":
         message = row.get("message")

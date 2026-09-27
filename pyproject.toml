@@ -3,8 +3,8 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "finegrain-memory"
-version = "0.1.0"
+name = "gm-nightly-loop"
+version = "0.2.0"
 description = "Turn company memory into grounded datasets, verifiable RL tasks, and a model that learns."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -16,13 +16,13 @@ river = ["river-client==0.11.0"]
 dev = ["pytest>=8,<10", "ruff>=0.12,<1", "build>=1"]
 
 [project.scripts]
-finegrain = "finegrain.cli:main"
+gm-nightly = "gm_nightly.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
-finegrain = ["data/*.jsonl", "web/*.html"]
+gm_nightly = ["data/*.jsonl", "web/*.html"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

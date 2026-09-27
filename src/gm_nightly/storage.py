@@ -32,7 +32,9 @@ def workspace_lock(path: Path):
         try:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
-            raise RuntimeError("Another Finegrain process owns this company workspace") from None
+            raise RuntimeError(
+                "Another GM Nightly Loop process owns this company workspace"
+            ) from None
         try:
             yield
         finally:

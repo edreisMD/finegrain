@@ -8,10 +8,10 @@ if ! command -v uv >/dev/null 2>&1; then
   exit 1
 fi
 uv tool install --python 3.12 --force .
-finegrain employee install "$@"
+gm-nightly employee install "$@"
 if [ "$(uname -s)" = Darwin ]; then
   ./scripts/build-macos.sh
   mkdir -p "$HOME/Applications"
-  ditto dist/Finegrain.app "$HOME/Applications/Finegrain.app"
-  open "$HOME/Applications/Finegrain.app"
+  ditto dist/GM Nightly Loop.app "$HOME/Applications/GM Nightly Loop.app"
+  open "$HOME/Applications/GM Nightly Loop.app"
 fi

@@ -1,4 +1,4 @@
-name: finegrain
+name: gm-nightly
 services:
   postgres:
     image: pgvector/pgvector:pg16
@@ -15,7 +15,7 @@ services:
       retries: 20
     restart: unless-stopped
   gbrain:
-    image: finegrain:local
+    image: gm-nightly:local
     build:
       context: ..
       dockerfile: deploy/Dockerfile
@@ -27,7 +27,7 @@ services:
     volumes:
       - brain:/data
     ports:
-      - "${FINEGRAIN_BIND:-127.0.0.1}:3131:3131"
+      - "${GM_NIGHTLY_BIND:-127.0.0.1}:3131:3131"
     depends_on:
       postgres:
         condition: service_healthy
@@ -38,7 +38,7 @@ services:
       retries: 30
     restart: unless-stopped
   trainer:
-    image: finegrain:local
+    image: gm-nightly:local
     build:
       context: ..
       dockerfile: deploy/Dockerfile
@@ -47,14 +47,14 @@ services:
       GBRAIN_DATABASE_URL: postgresql://gbrain:${POSTGRES_PASSWORD}@postgres:5432/gbrain
       GBRAIN_PUBLIC_URL: ${GBRAIN_PUBLIC_URL:-http://localhost:3131}
       RIVER_API_KEY: ${RIVER_API_KEY:-}
-      FINEGRAIN_COMPANY: ${FINEGRAIN_COMPANY:-company}
-      FINEGRAIN_CADENCE: ${FINEGRAIN_CADENCE:-nightly}
-      FINEGRAIN_TIMEZONE: ${FINEGRAIN_TIMEZONE:-UTC}
+      GM_NIGHTLY_COMPANY: ${GM_NIGHTLY_COMPANY:-company}
+      GM_NIGHTLY_CADENCE: ${GM_NIGHTLY_CADENCE:-nightly}
+      GM_NIGHTLY_TIMEZONE: ${GM_NIGHTLY_TIMEZONE:-UTC}
     volumes:
       - brain:/data
       - training:/training
     ports:
-      - "${FINEGRAIN_BIND:-127.0.0.1}:8787:8787"
+      - "${GM_NIGHTLY_BIND:-127.0.0.1}:8787:8787"
     depends_on:
       gbrain:
         condition: service_healthy

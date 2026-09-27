@@ -44,7 +44,7 @@ DEMO_NOTES = [
 
 def create_demo(root: Path) -> Path:
     root.mkdir(parents=True, exist_ok=True)
-    config = root / "finegrain.toml"
+    config = root / "gm-nightly.toml"
     memories = root / "memories.jsonl"
     if config.exists() or memories.exists():
         raise ValueError(
@@ -69,7 +69,7 @@ def create_demo(root: Path) -> Path:
             for i, (title, content) in enumerate(DEMO_NOTES)
         ],
     )
-    config.write_text("""[finegrain]
+    config.write_text("""[gm]
 tenant = "demo-company"
 state_dir = "state"
 

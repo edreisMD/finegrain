@@ -42,13 +42,15 @@ def write_config(path: Path, sections: dict):
 
 def employee_install(args):
     print(
-        "\n  ◒  Finegrain\n  Personal Gbrain → company Gbrain → a model that learns\n",
+        "\n  ◒  GM Nightly Loop\n  Personal Gbrain → company Gbrain → a model that learns\n",
         file=sys.stderr,
     )
     tenant = identifier(args.company or input("Company ID: ").strip())
     employee = identifier(args.employee_id or input("Your teammate ID: ").strip())
     url = validate_server_url(args.company_url or input("Company Gbrain URL: ").strip())
-    output = (args.output or Path.home() / ".config/finegrain/employee.toml").expanduser().resolve()
+    output = (
+        (args.output or Path.home() / ".config/gm-nightly/employee.toml").expanduser().resolve()
+    )
     if output.exists():
         raise ValueError("Employee profile already exists; it has not been changed")
     projects = [str(Path(p).expanduser().resolve()) for p in args.share_project]
@@ -118,7 +120,7 @@ def employee_install(args):
     write_config(
         output,
         {
-            "finegrain": {
+            "gm": {
                 "tenant": tenant,
                 "role": "employee",
                 "employee_id": employee,
@@ -136,7 +138,7 @@ def employee_install(args):
         },
     )
     app_settings = (
-        args.app_settings or Path.home() / "Library/Application Support/Finegrain/app.json"
+        args.app_settings or Path.home() / "Library/Application Support/GM Nightly Loop/app.json"
     )
     atomic_json(
         app_settings,
@@ -153,13 +155,13 @@ def employee_install(args):
         "config": str(output),
         "app_settings": str(app_settings),
         "shared_projects": projects,
-        "start": shlex.join(["finegrain", "--config", str(output), "employee", "watch"]),
+        "start": shlex.join(["gm-nightly", "--config", str(output), "employee", "watch"]),
     }
 
 
 def server_install(args):
     tenant = identifier(args.company or input("Company ID: ").strip())
-    output = (args.output or Path("finegrain.server.toml")).resolve()
+    output = (args.output or Path("gm-nightly.server.toml")).resolve()
     if not args.gbrain_home:
         raise ValueError("Pass --gbrain-home for the existing company Gbrain profile")
     if not (Path(args.gbrain_home).expanduser() / ".gbrain/config.json").exists():
@@ -170,10 +172,10 @@ def server_install(args):
     write_config(
         output,
         {
-            "finegrain": {
+            "gm": {
                 "tenant": tenant,
                 "role": "server",
-                "state_dir": str(output.parent / ".finegrain/company"),
+                "state_dir": str(output.parent / ".gm/company"),
             },
             "generation": {"teacher": "river"},
             "schedule": {
@@ -195,7 +197,7 @@ def server_install(args):
                     "command": [args.gbrain_binary],
                     "home": str(Path(args.gbrain_home).resolve()),
                     "source_id": args.source,
-                    "tag": "finegrain-share",
+                    "tag": "gm-nightly-share",
                     "remote": args.remote,
                 }
             ],
@@ -203,7 +205,7 @@ def server_install(args):
     )
     return {
         "config": str(output),
-        "start": shlex.join(["finegrain", "--config", str(output), "server", "serve"]),
+        "start": shlex.join(["gm-nightly", "--config", str(output), "server", "serve"]),
     }
 
 
@@ -218,7 +220,7 @@ def invite(config: Config, employee: str, output: Path):
         [
             "auth",
             "register-client",
-            "finegrain-" + employee,
+            "gm-nightly-" + employee,
             "--grant-types",
             "client_credentials",
             "--scopes",

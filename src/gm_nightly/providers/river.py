@@ -31,7 +31,7 @@ def ensure_models(client, names: list[str]) -> None:
         raise ValueError(
             "River account cannot access configured models: "
             + ", ".join(missing)
-            + ". Run finegrain models and update your configuration."
+            + ". Run gm-nightly models and update your configuration."
         )
 
 
@@ -176,7 +176,9 @@ class RiverProvider(TrainingProvider):
         if not batch:
             raise ValueError("No SFT examples")
         metrics, rng = [], random.Random(0)
-        with self.client.session(project=f"finegrain-{self.config.tenant}", phase="sft") as session:
+        with self.client.session(
+            project=f"gm-nightly-{self.config.tenant}", phase="sft"
+        ) as session:
             model = session.create_model(
                 base_model=base.base_model,
                 tokenizer=renderer.tokenizer,
@@ -216,7 +218,7 @@ class RiverProvider(TrainingProvider):
             raise ValueError("RL accepts only a nonempty training partition")
         renderer = get_renderer(start.base_model)
         metrics = []
-        with self.client.session(project=f"finegrain-{self.config.tenant}", phase="rl") as session:
+        with self.client.session(project=f"gm-nightly-{self.config.tenant}", phase="rl") as session:
             model = session.create_model(
                 base_model=start.base_model,
                 tokenizer=renderer.tokenizer,

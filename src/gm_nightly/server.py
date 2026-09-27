@@ -1,4 +1,4 @@
-"""Finegrain training coordinator UI. The company brain/UI/auth are Gbrain's."""
+"""GM Nightly Loop training coordinator UI. The company brain/UI/auth are Gbrain's."""
 
 from __future__ import annotations
 
@@ -44,7 +44,7 @@ def make_http_server(config: Config, host="127.0.0.1", port=8787):
                         )
                 body, kind = canonical(value).encode(), "application/json"
             elif self.path == "/":
-                body = files("finegrain").joinpath("web/index.html").read_bytes()
+                body = files("gm_nightly").joinpath("web/index.html").read_bytes()
                 kind = "text/html; charset=utf-8"
             else:
                 self.send_error(404)
@@ -71,7 +71,7 @@ def serve(config: Config, host="127.0.0.1", port=8787, worker=True):
         threading.Thread(target=run_worker, args=(config,), daemon=True).start()
     server = make_http_server(config, host, port)
     try:
-        print(f"Finegrain training console: http://{host}:{port}", flush=True)
+        print(f"GM Nightly Loop training console: http://{host}:{port}", flush=True)
         server.serve_forever()
     finally:
         server.server_close()

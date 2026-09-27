@@ -1,6 +1,6 @@
-[finegrain]
+[gm]
 tenant = "northstar-demo"
-state_dir = "../.finegrain"
+state_dir = "../.gm"
 
 [generation]
 teacher = "demo"

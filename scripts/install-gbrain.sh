@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eu
-# Canonical upstream distribution, pinned to the version verified with Finegrain.
+# Canonical upstream distribution, pinned to the version verified with GM Nightly Loop.
 if ! command -v bun >/dev/null 2>&1; then
   printf 'Install Bun first: https://bun.com/docs/installation\n' >&2
   exit 1

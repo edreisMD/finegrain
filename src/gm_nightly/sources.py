@@ -94,7 +94,7 @@ def conversation(rows: list[dict], kind: str) -> str:
                 and row.get("item", {}).get("type") == "agent_message"
             ):
                 msg = {"role": "assistant", "content": row["item"].get("text", "")}
-            elif row.get("type") == "finegrain.user_prompt":
+            elif row.get("type") == "gm.user_prompt":
                 msg = {"role": "user", "content": row.get("text", "")}
         if isinstance(msg, dict) and msg.get("role") in {"user", "assistant"}:
             content = text_content(msg.get("content"))
@@ -105,7 +105,7 @@ def conversation(rows: list[dict], kind: str) -> str:
 
 def read_archive(archive, source: dict, tenant: str) -> list[Memory]:
     total = 0
-    with tempfile.TemporaryDirectory(prefix="finegrain-export-") as directory:
+    with tempfile.TemporaryDirectory(prefix="gm-nightly-export-") as directory:
         root = Path(directory)
         with tarfile.open(fileobj=archive, mode="r|gz") as tar:
             for entry in tar:
@@ -144,7 +144,9 @@ def collect(source: dict, tenant: str) -> list[Memory]:
         )
         return [
             memory
-            for page in brain.pages(source.get("tag", "finegrain-share"), source.get("limit", 1000))
+            for page in brain.pages(
+                source.get("tag", "gm-nightly-share"), source.get("limit", 1000)
+            )
             if (memory := shared_memory(page, tenant)) is not None
         ]
     if kind == "gbrain_ssh":

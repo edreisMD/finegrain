@@ -67,7 +67,7 @@ def install_schedule(config: Config, config_path: Path, install: bool) -> dict:
     folder = config.workspace / "scheduler"
     folder.mkdir(parents=True, exist_ok=True)
     if platform.system() == "Darwin":
-        name = f"io.finegrain.{config.tenant}.plist"
+        name = f"io.gm.{config.tenant}.plist"
         rendered = folder / name
         rendered.write_bytes(launchd_plist(config_path, config))
         if install:
@@ -91,7 +91,7 @@ def install_schedule(config: Config, config_path: Path, install: bool) -> dict:
             "note": "River runs need RIVER_API_KEY available to the launchd user environment.",
         }
     service, timer = systemd_units(config_path, config)
-    name = f"finegrain-{config.tenant}"
+    name = f"gm-nightly-{config.tenant}"
     (folder / f"{name}.service").write_text(service)
     (folder / f"{name}.timer").write_text(timer)
     if install:
@@ -110,14 +110,14 @@ def install_schedule(config: Config, config_path: Path, install: bool) -> dict:
 def main(argv=None) -> int:
     os.umask(0o077)
     parser = argparse.ArgumentParser(
-        prog="finegrain", description="Compile company memory into learning."
+        prog="gm-nightly", description="Run GM's nightly company learning loop."
     )
-    parser.add_argument("--config", default="finegrain.toml")
+    parser.add_argument("--config", default="gm-nightly.toml")
     commands = parser.add_subparsers(dest="command", required=True)
     demo = commands.add_parser(
         "demo", help="Compile synthetic company memories without credentials"
     )
-    demo.add_argument("--output", type=Path, default=Path(".finegrain/demo"))
+    demo.add_argument("--output", type=Path, default=Path(".gm/demo"))
     commands.add_parser("compile", help="Build and verify SFT, RL and evaluation datasets")
     commands.add_parser("run", help="Compile, train, evaluate and apply the promotion gate")
     collect_command = commands.add_parser(
@@ -337,5 +337,5 @@ def main(argv=None) -> int:
         KeyError,
         subprocess.SubprocessError,
     ) as exc:
-        print(f"finegrain: {exc}", file=sys.stderr)
+        print(f"gm-nightly: {exc}", file=sys.stderr)
         return 1

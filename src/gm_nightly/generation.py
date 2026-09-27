@@ -218,7 +218,7 @@ def dedupe_tasks(tasks: list[Task]) -> tuple[list[Task], int]:
 def regression_tasks() -> list[Task]:
     path = (
         __import__("importlib.resources", fromlist=["files"])
-        .files("finegrain")
+        .files("gm_nightly")
         .joinpath("data/general_eval.jsonl")
     )
     return [Task(**json.loads(line)) for line in path.read_text().splitlines() if line.strip()]

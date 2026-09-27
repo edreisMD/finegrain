@@ -6,7 +6,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from finegrain.onboarding import write_config
+from gm_nightly.onboarding import write_config
 
 os.umask(0o077)
 mode = sys.argv[1] if len(sys.argv) > 1 else "brain"
@@ -44,9 +44,9 @@ if mode == "brain":
                 "-C",
                 str(root),
                 "-c",
-                "user.name=Finegrain",
+                "user.name=GM Nightly Loop",
                 "-c",
-                "user.email=finegrain@localhost",
+                "user.email=gm-nightly@localhost",
                 "commit",
                 "--allow-empty",
                 "-m",
@@ -83,13 +83,13 @@ if mode == "brain":
         ],
     )
 elif mode == "trainer":
-    config = Path("/training/finegrain.toml")
+    config = Path("/training/gm-nightly.toml")
     if not config.exists():
         write_config(
             config,
             {
-                "finegrain": {
-                    "tenant": os.environ.get("FINEGRAIN_COMPANY", "company"),
+                "gm": {
+                    "tenant": os.environ.get("GM_NIGHTLY_COMPANY", "company"),
                     "role": "server",
                     "state_dir": "/training/state",
                 },
@@ -99,9 +99,9 @@ elif mode == "trainer":
                     "server_url": os.environ.get("GBRAIN_PUBLIC_URL", "http://localhost:3131")
                 },
                 "schedule": {
-                    "cadence": os.environ.get("FINEGRAIN_CADENCE", "nightly"),
+                    "cadence": os.environ.get("GM_NIGHTLY_CADENCE", "nightly"),
                     "hour": 2,
-                    "timezone": os.environ.get("FINEGRAIN_TIMEZONE", "UTC"),
+                    "timezone": os.environ.get("GM_NIGHTLY_TIMEZONE", "UTC"),
                     "auto_train": True,
                 },
                 "sources": [
@@ -110,13 +110,13 @@ elif mode == "trainer":
                         "kind": "gbrain_cli",
                         "home": "/data",
                         "source_id": "shared",
-                        "tag": "finegrain-share",
+                        "tag": "gm-nightly-share",
                     }
                 ],
             },
         )
     os.execvp(
-        "finegrain", ["finegrain", "--config", str(config), "server", "serve", "--host", "0.0.0.0"]
+        "gm-nightly", ["gm-nightly", "--config", str(config), "server", "serve", "--host", "0.0.0.0"]
     )
 else:
     os.execvp(sys.argv[1], sys.argv[1:])

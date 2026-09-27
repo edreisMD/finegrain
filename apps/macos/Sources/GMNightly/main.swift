@@ -19,13 +19,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
-        let path = ProcessInfo.processInfo.environment["FINEGRAIN_APP_SETTINGS"] ?? (NSHomeDirectory() + "/Library/Application Support/Finegrain/app.json")
+        let path = ProcessInfo.processInfo.environment["GM_NIGHTLY_APP_SETTINGS"] ?? (NSHomeDirectory() + "/Library/Application Support/GM Nightly Loop/app.json")
         if let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
             settings = try? JSONDecoder().decode(Settings.self, from: data)
         }
         item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        item.button?.image = NSImage(systemSymbolName: "leaf.circle.fill", accessibilityDescription: "Finegrain")
-        item.button?.toolTip = "Finegrain · Personal memory, company learning"
+        item.button?.image = NSImage(systemSymbolName: "leaf.circle.fill", accessibilityDescription: "GM Nightly Loop")
+        item.button?.toolTip = "GM Nightly Loop · Personal memory, company learning"
         if settings != nil { startWorker() }
         refresh()
         timer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { [weak self] _ in self?.refresh() }
@@ -35,7 +35,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         guard let s = settings, worker?.isRunning != true else { return }
         let process = Process()
         process.executableURL = URL(fileURLWithPath: s.python)
-        process.arguments = ["-m", "finegrain", "--config", s.config, "employee", "watch"]
+        process.arguments = ["-m", "gm_nightly", "--config", s.config, "employee", "watch"]
         process.currentDirectoryURL = URL(fileURLWithPath: s.config).deletingLastPathComponent()
         try? FileManager.default.createDirectory(atPath: s.workspace, withIntermediateDirectories: true, attributes: [.posixPermissions: 0o700])
         let log = s.workspace + "/menubar-worker.log"
@@ -57,7 +57,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func refresh() {
         let menu = NSMenu()
-        menu.addItem(entry("Finegrain"))
+        menu.addItem(entry("GM Nightly Loop"))
         if let s = settings {
             let paused = FileManager.default.fileExists(atPath: s.workspace + "/paused")
             var info: [String: Any] = [:]
@@ -71,14 +71,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             menu.addItem(entry(paused ? "Resume capture & relay" : "Pause capture & relay", #selector(togglePause)))
             menu.addItem(entry("Open company Gbrain…", #selector(openCompany)))
             menu.addItem(entry("Open personal Gbrain files…", #selector(openBrain)))
-            menu.addItem(entry("View Finegrain status…", #selector(openStatus)))
+            menu.addItem(entry("View GM Nightly Loop status…", #selector(openStatus)))
             menu.addItem(entry("Settings…", #selector(openSettings)))
         } else {
             menu.addItem(entry("Connect your personal and company Gbrain", #selector(showSetup)))
         }
         menu.addItem(NSMenuItem.separator())
-        menu.addItem(entry("About Finegrain", #selector(about)))
-        menu.addItem(entry("Quit Finegrain", #selector(quit)))
+        menu.addItem(entry("About GM Nightly Loop", #selector(about)))
+        menu.addItem(entry("Quit GM Nightly Loop", #selector(quit)))
         item.menu = menu
     }
 
@@ -96,16 +96,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     @objc private func openSettings() { if let s = settings { NSWorkspace.shared.open(URL(fileURLWithPath: s.config)) } }
     @objc private func showSetup() {
         let alert = NSAlert()
-        alert.messageText = "Connect Finegrain"
-        alert.informativeText = "In your Finegrain checkout, run:\n\n./scripts/install-employee.sh\n\nThe terminal setup reuses your personal Gbrain and connects the scoped company credentials your administrator provided. Then reopen this app."
+        alert.messageText = "Connect GM Nightly Loop"
+        alert.informativeText = "In your GM Nightly Loop checkout, run:\n\n./scripts/install-employee.sh\n\nThe terminal setup reuses your personal Gbrain and connects the scoped company credentials your administrator provided. Then reopen this app."
         alert.addButton(withTitle: "Got it")
         NSApp.activate(ignoringOtherApps: true)
         alert.runModal()
     }
     @objc private func about() {
         let alert = NSAlert()
-        alert.messageText = "Finegrain"
-        alert.informativeText = "Personal Gbrain → company Gbrain → River\n\nYour agents keep their normal session files. Only selected compiled notes are shared. Gbrain owns memory and permissions; Finegrain builds datasets and evaluates new models.\n\nOpen source · Version 0.1.0"
+        alert.messageText = "GM Nightly Loop"
+        alert.informativeText = "Personal Gbrain → company Gbrain → River\n\nYour agents keep their normal session files. Only selected compiled notes are shared. Gbrain owns memory and permissions; GM Nightly Loop builds datasets and evaluates new models.\n\nOpen source · Version 0.1.0"
         alert.runModal()
     }
     @objc private func quit() { worker?.terminate(); NSApp.terminate(nil) }

@@ -28,9 +28,9 @@ lines = {
     "GBRAIN_ADMIN_BOOTSTRAP_TOKEN": owner,
     "RIVER_API_KEY": river_key,
     "GBRAIN_PUBLIC_URL": url,
-    "FINEGRAIN_COMPANY": company,
-    "FINEGRAIN_CADENCE": "nightly",
-    "FINEGRAIN_TIMEZONE": "UTC",
+    "GM_NIGHTLY_COMPANY": company,
+    "GM_NIGHTLY_CADENCE": "nightly",
+    "GM_NIGHTLY_TIMEZONE": "UTC",
 }
 with path.open("x") as f:
     f.write("\n".join(f"{k}={v}" for k, v in lines.items()) + "\n")

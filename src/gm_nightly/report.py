@@ -43,7 +43,7 @@ def render_report(path: Path, tenant: str, training: dict | None = None) -> Path
         )
         result = f"<pre>{esc(json.dumps({k: training[k] for k in ('checkpoint', 'before', 'after', 'gate')}, indent=2))}</pre>"
     document = """<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Finegrain · Learning manifest</title><style>
+<title>GM Nightly Loop · Learning manifest</title><style>
 :root{color-scheme:light;--ink:#18362c;--muted:#69796f;--line:#dce4d9;--green:#286545}*{box-sizing:border-box}
 body{margin:0;background:#f7f8f2;color:var(--ink);font:15px/1.6 ui-sans-serif,system-ui,sans-serif}
 main{max-width:1120px;margin:auto;padding:42px 28px 80px}header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:24px}
@@ -57,7 +57,7 @@ h2{font-size:22px;font-weight:550;letter-spacing:-.5px}details{border-bottom:1px
 .detail{padding:0 20px 20px 131px}pre{background:#eef1e9;padding:16px;border-radius:6px;white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.6 ui-monospace,monospace}
 blockquote{border-left:2px solid #9ab181;padding-left:15px;margin-left:0;color:var(--muted)}footer{margin-top:50px;border-top:1px solid var(--line);padding-top:20px;font-size:12px;color:var(--muted)}
 @media(max-width:650px){.stats{grid-template-columns:repeat(2,1fr)}.detail{padding-left:5px}.flow span{margin:0 5px}header .tag{display:none}summary{display:block}.badge{display:block;margin-bottom:8px}}
-</style><main><header><div class="brand">finegrain<i>✳</i></div><div class="tag">Memory → learning → ownership</div></header>
+</style><main><header><div class="brand">gm-nightly<i>✳</i></div><div class="tag">Memory → learning → ownership</div></header>
 <section class="hero"><div class="tag">Company learning manifest</div><h1>A day's work.<br>A lasting memory.</h1><p class="lead">The knowledge your team creates becomes a curriculum your model can learn. Every task leads back to its source.</p>
 <div class="status">STATUS</div></section><div class="flow">Gbrain source of truth <span>→</span> Teacher & critic <span>→</span> SFT + RL <span>→</span> Evaluation gate</div>
 <section class="stats">CARDS</section><h2>Inspect the curriculum</h2><p class="muted">Recall tests hide the source. Generalization tests use held-out source context. Both are separate from training prompts.</p>
@@ -82,7 +82,7 @@ blockquote{border-left:2px solid #9ab181;padding-left:15px;margin-left:0;color:v
 def write_evaluation_report(path: Path, result: dict) -> Path:
     evaluations = result["evaluations"]
     lines = [
-        "# Finegrain evaluation",
+        "# GM Nightly Loop evaluation",
         "",
         f"Run: `{result['run_id']}`",
         "",

@@ -1,7 +1,7 @@
 """Adapter to the official garrytan/gbrain CLI, pinned/tested at 0.59.0.0.
 
 Gbrain owns storage, revisions, OAuth, scoping, raw traces, and the admin UI.
-Finegrain never connects directly to its database or copies its auth system.
+GM Nightly Loop never connects directly to its database or copies its auth system.
 """
 
 from __future__ import annotations
@@ -29,7 +29,7 @@ class Gbrain:
     ):
         self.command, self.home, self.source, self.remote = command, home, source, remote
         if not source or source == "__all__":
-            raise ValueError("Finegrain requires one explicit Gbrain source")
+            raise ValueError("GM Nightly Loop requires one explicit Gbrain source")
 
     def env(self):
         env = dict(os.environ)
@@ -172,7 +172,7 @@ def shared_memory(page: dict, tenant: str, employee="company") -> Memory | None:
         page.get("deleted_at")
         or page.get("type") in {"conversation", "transcript", "session"}
         or fm.get("visibility") != "brain-wide"
-        or fm.get("finegrain_training") is not True
+        or fm.get("gm_training") is not True
     ):
         return None
     content = page.get("compiled_truth", "")
@@ -209,7 +209,7 @@ def shared_memory(page: dict, tenant: str, employee="company") -> Memory | None:
 
 
 def note_markdown(
-    title: str, content: str, shared: bool, tag="finegrain-share", extra: dict | None = None
+    title: str, content: str, shared: bool, tag="gm-nightly-share", extra: dict | None = None
 ):
     # JSON strings/values are YAML-compatible, so model text never becomes a YAML key.
     header = {
@@ -217,7 +217,7 @@ def note_markdown(
         "type": "note",
         "visibility": "brain-wide" if shared else "private",
         "tags": [tag] if shared else [],
-        "finegrain_training": shared,
+        "gm_training": shared,
         **(extra or {}),
     }
     return (

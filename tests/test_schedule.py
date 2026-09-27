@@ -4,8 +4,14 @@ from datetime import datetime
 
 import pytest
 
-from finegrain.cli import tick
-from finegrain.schedule import compilation_slot, is_due, launchd_plist, systemd_units, training_slot
+from gm_nightly.cli import tick
+from gm_nightly.schedule import (
+    compilation_slot,
+    is_due,
+    launchd_plist,
+    systemd_units,
+    training_slot,
+)
 
 
 @pytest.mark.parametrize(
@@ -52,7 +58,7 @@ def test_tick_compiles_once_and_never_trains_demo(config, store):
 
 
 def test_scheduler_config_paths_with_spaces(config, tmp_path):
-    path = tmp_path / "company workspace" / "finegrain.toml"
+    path = tmp_path / "company workspace" / "gm-nightly.toml"
     data = plistlib.loads(launchd_plist(path, config, "/my venv/bin/python"))
     assert data["ProgramArguments"][0] == "/my venv/bin/python"
     assert data["ProgramArguments"][4] == str(path)

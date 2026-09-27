@@ -28,9 +28,9 @@ class Config:
     gbrain_source: str = "default"
     company_home: str = ""
     company_source: str = "shared"
-    share_tag: str = "finegrain-share"
+    share_tag: str = "gm-nightly-share"
     gbrain_ingest: bool = True
-    state_dir: Path = Path(".finegrain")
+    state_dir: Path = Path(".gm/nightly")
     teacher: str = "demo"
     teacher_model: str = "nvidia/Kimi-K2.6-NVFP4"
     critic_model: str = "nvidia/GLM-5.2-NVFP4"
@@ -155,7 +155,7 @@ class Config:
 def load_config(path: str | Path) -> Config:
     path = Path(path).resolve()
     data = tomllib.loads(path.read_text())
-    flat = dict(data.get("finegrain", {}))
+    flat = dict(data.get("gm", {}))
     for section in (
         "generation",
         "training",
@@ -174,7 +174,7 @@ def load_config(path: str | Path) -> Config:
         flat["student_model"] = os.environ["GM_BASE_MODEL"]
     if os.environ.get("GM_CHECKPOINT"):
         flat["foundation_checkpoint"] = os.environ["GM_CHECKPOINT"]
-    state = Path(flat.get("state_dir", ".finegrain")).expanduser()
+    state = Path(flat.get("state_dir", ".gm/nightly")).expanduser()
     flat["state_dir"] = state if state.is_absolute() else path.parent / state
     if flat.get("credentials_file"):
         p = Path(flat["credentials_file"]).expanduser()

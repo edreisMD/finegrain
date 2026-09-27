@@ -11,16 +11,16 @@ import os
 import subprocess
 from pathlib import Path
 
-from finegrain.cli import main
-from finegrain.config import load_config
-from finegrain.employee import load_credentials
-from finegrain.gbrain import Gbrain, GbrainError
-from finegrain.storage import atomic_json
+from gm_nightly.cli import main
+from gm_nightly.config import load_config
+from gm_nightly.employee import load_credentials
+from gm_nightly.gbrain import Gbrain, GbrainError
+from gm_nightly.storage import atomic_json
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--gbrain-binary', required=True)
-parser.add_argument('--container', default='finegrain-sandbox-trainer-1')
-parser.add_argument('--root', type=Path, default=Path('.finegrain/smoke'))
+parser.add_argument('--container', default='gm-nightly-sandbox-trainer-1')
+parser.add_argument('--root', type=Path, default=Path('.gm/smoke'))
 args = parser.parse_args()
 os.umask(0o077)
 root = args.root.resolve()
@@ -41,11 +41,11 @@ for employee, convention in [('alice', 'two reviewers'), ('bob', 'a staging smok
     credential = directory / 'handoff.json'
     if not credential.exists():
         remote_path = '/training/smoke-' + employee + '.json'
-        docker('finegrain', '--config', '/training/finegrain.toml', 'server', 'invite', employee, '--output', remote_path)
+        docker('gm-nightly', '--config', '/training/gm-nightly.toml', 'server', 'invite', employee, '--output', remote_path)
         atomic_json(credential, json.loads(docker('cat', remote_path)))
     profile = directory / 'employee.toml'
     if not profile.exists():
-        code = main(['employee', 'install', '--company', 'finegrain-demo', '--employee-id', employee,
+        code = main(['employee', 'install', '--company', 'gm-nightly-demo', '--employee-id', employee,
                      '--company-url', 'http://localhost:3131', '--credentials', str(credential),
                      '--gbrain-home', str(directory / 'personal'), '--gbrain-binary', args.gbrain_binary,
                      '--output', str(profile), '--app-settings', str(directory / 'app.json'),
@@ -75,7 +75,7 @@ for employee, convention in [('alice', 'two reviewers'), ('bob', 'a staging smok
         raise AssertionError('Upstream write fence failed')
     print('PASS', employee, 'onboarding, compiled relay, duplicate retry, upstream write fence', flush=True)
 
-rows = json.loads(docker('gbrain', 'call', '--source', 'shared', 'list_pages', '{"source_id":"shared","tag":"finegrain-share","limit":100}'))
+rows = json.loads(docker('gbrain', 'call', '--source', 'shared', 'list_pages', '{"source_id":"shared","tag":"gm-nightly-share","limit":100}'))
 assert len(rows) == 3, len(rows)
 for row in rows:
     content = json.loads(docker('gbrain', 'call', '--source', 'shared', 'get_page', json.dumps({'slug':row['slug'],'source_id':'shared'})))

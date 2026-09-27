@@ -10,8 +10,8 @@ COPY pyproject.toml README.md LICENSE ./
 COPY src ./src
 RUN pip install --no-cache-dir '.[river]'
 COPY deploy/entrypoint.py /app/entrypoint.py
-RUN useradd --create-home --uid 10001 finegrain && mkdir -p /data /training && chown finegrain:finegrain /data /training
-USER finegrain
+RUN useradd --create-home --uid 10001 gm-nightly && mkdir -p /data /training && chown gm-nightly:gm-nightly /data /training
+USER gm-nightly
 ENV GBRAIN_HOME=/data PYTHONUNBUFFERED=1
 ENTRYPOINT ["python", "/app/entrypoint.py"]
 CMD ["brain"]

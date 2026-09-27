@@ -40,7 +40,7 @@ def run_experiment(provider, tasks, config, checkpoint=None, baseline=None):
         return evaluate(tasks, predict)
 
     base = ModelRef(provider.name, config.student_model)
-    print("Finegrain: evaluating base model", file=sys.stderr, flush=True)
+    print("GM Nightly Loop: evaluating base model", file=sys.stderr, flush=True)
     evaluations = {"base": assess(base)}
     atomic_json(folder / "evaluation.json", evaluations)
     current = ModelRef(
@@ -50,7 +50,7 @@ def run_experiment(provider, tasks, config, checkpoint=None, baseline=None):
     )
     evaluations["current"] = assess(current) if current.checkpoint else evaluations["base"]
     atomic_json(folder / "evaluation.json", evaluations)
-    print("Finegrain: supervised fine-tuning", file=sys.stderr, flush=True)
+    print("GM Nightly Loop: supervised fine-tuning", file=sys.stderr, flush=True)
     sft = provider.train_sft(
         ModelRef(provider.name, config.student_model, checkpoint),
         str(data / "sft.jsonl"),
@@ -63,7 +63,7 @@ def run_experiment(provider, tasks, config, checkpoint=None, baseline=None):
     atomic_json(folder / "evaluation.json", evaluations)
     candidate = sft
     if config.rl_steps:
-        print("Finegrain: reinforcement learning", file=sys.stderr, flush=True)
+        print("GM Nightly Loop: reinforcement learning", file=sys.stderr, flush=True)
         candidate = provider.train_rl(
             sft.model,
             str(data / "rl_tasks.jsonl"),

@@ -3,10 +3,11 @@ from pathlib import Path
 
 import pytest
 
-from finegrain.generation import DemoTeacher
-from finegrain.models import Memory
-from finegrain.pipeline import compile_dataset, write_jsonl
-from finegrain.training import train_dataset
+from gm_nightly.config import load_config
+from gm_nightly.generation import DemoTeacher
+from gm_nightly.models import Memory
+from gm_nightly.pipeline import compile_dataset, write_jsonl
+from gm_nightly.training import train_dataset
 
 
 class FakeProvider:
@@ -57,6 +58,16 @@ def test_first_company_run_starts_from_gm(config, store):
     result = train_dataset(config, path, provider, store)
     assert provider.calls == ["river://gm/part-1"]
     assert result["resume_strategy"] == "gm_foundation"
+
+
+def test_gm_checkpoint_environment_contract(tmp_path, monkeypatch):
+    profile = tmp_path / "gm.toml"
+    profile.write_text("[gm]\ntenant = 'gm-company'\n")
+    monkeypatch.setenv("GM_BASE_MODEL", "Qwen/Qwen3.5-9B")
+    monkeypatch.setenv("GM_CHECKPOINT", "river://gm/part-1")
+    config = load_config(profile)
+    assert config.student_model == "Qwen/Qwen3.5-9B"
+    assert config.foundation_checkpoint == "river://gm/part-1"
 
 
 def test_regression_is_not_promoted(config, store):

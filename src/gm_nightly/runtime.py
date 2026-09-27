@@ -51,7 +51,7 @@ def employee_cycle(config: Config, store: Store, *, force=False, brain=None, com
             previous = store.get(key) or {}
             if previous.get("signature") == signature:
                 continue
-            slug = "finegrain/compiled/" + session["id"]
+            slug = "gm-nightly/compiled/" + session["id"]
             # Reuse Gbrain's native import, parsers, redaction and checkpoints for these harnesses.
             if enabled and config.gbrain_ingest and session["kind"] in {"claude", "codex"}:
                 local.ingest(str(path), session["kind"])
@@ -66,8 +66,8 @@ def employee_cycle(config: Config, store: Store, *, force=False, brain=None, com
                     page["shared"],
                     config.share_tag,
                     {
-                        "finegrain_compiler": page["compiler"],
-                        "finegrain_provenance": page["provenance"],
+                        "gm_compiler": page["compiler"],
+                        "gm_provenance": page["provenance"],
                     },
                 )
                 if page
@@ -138,7 +138,7 @@ def run_worker(config: Config, *, once=False, force=False):
             status.update(
                 state="error",
                 error=type(error).__name__,
-                message="Check Finegrain status and gbrain doctor; work will retry.",
+                message="Check GM Nightly Loop status and gbrain doctor; work will retry.",
             )
             if once:
                 atomic_json(config.workspace / "status.json", status)

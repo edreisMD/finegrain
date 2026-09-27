@@ -1,7 +1,7 @@
 # Uses only fictional company pages. RIVER_API_KEY comes from the environment.
-[finegrain]
+[gm]
 tenant = "northstar-river"
-state_dir = "../.finegrain"
+state_dir = "../.gm"
 
 [generation]
 teacher = "river"

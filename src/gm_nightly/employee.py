@@ -66,7 +66,7 @@ def relay(config: Config, local, company, store) -> dict:
                 memory.content,
                 True,
                 config.share_tag,
-                {"finegrain_origin": digest(memory.id), "finegrain_employee": config.employee_id},
+                {"gm_origin": digest(memory.id), "gm_employee": config.employee_id},
             )
     sent = withdrawn = 0
     for slug, markdown in approved.items():

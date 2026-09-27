@@ -39,11 +39,11 @@ def launchd_plist(config_path: Path, config: Config, python: str | None = None) 
     python = python or sys.executable
     return plistlib.dumps(
         {
-            "Label": f"io.finegrain.{config.tenant}",
+            "Label": f"io.gm.{config.tenant}",
             "ProgramArguments": [
                 python,
                 "-m",
-                "finegrain",
+                "gm-nightly",
                 "--config",
                 str(config_path.resolve()),
                 "tick",
@@ -69,20 +69,20 @@ def systemd_units(config_path: Path, config: Config, python: str | None = None) 
     args = [
         python or sys.executable,
         "-m",
-        "finegrain",
+        "gm-nightly",
         "--config",
         str(config_path.resolve()),
         "tick",
     ]
     service = (
-        "[Unit]\nDescription=Finegrain memory compiler\n[Service]\nType=oneshot\n"
+        "[Unit]\nDescription=GM Nightly Loop memory compiler\n[Service]\nType=oneshot\n"
         + "ExecStart="
         + " ".join(quote(a) for a in args)
         + "\n"
-        + "EnvironmentFile=%h/.config/finegrain/environment\n"
+        + "EnvironmentFile=%h/.config/gm-nightly/environment\n"
     )
     timer = (
-        "[Unit]\nDescription=Check Finegrain nightly schedule\n[Timer]\nOnCalendar=hourly\nPersistent=true\n"
-        + f"Unit=finegrain-{config.tenant}.service\n[Install]\nWantedBy=timers.target\n"
+        "[Unit]\nDescription=Check GM Nightly Loop nightly schedule\n[Timer]\nOnCalendar=hourly\nPersistent=true\n"
+        + f"Unit=gm-nightly-{config.tenant}.service\n[Install]\nWantedBy=timers.target\n"
     )
     return service, timer

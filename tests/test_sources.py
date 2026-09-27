@@ -4,7 +4,7 @@ import tarfile
 
 import pytest
 
-from finegrain.sources import collect, conversation, read_archive
+from gm_nightly.sources import collect, conversation, read_archive
 
 
 def test_codex_messages_exclude_tools_and_reasoning():
@@ -38,7 +38,7 @@ def test_codex_messages_exclude_tools_and_reasoning():
 
 def test_codex_exec_and_prompt_envelope():
     rows = [
-        {"type": "finegrain.user_prompt", "text": "Question"},
+        {"type": "gm.user_prompt", "text": "Question"},
         {"type": "item.completed", "item": {"type": "agent_message", "text": "Answer"}},
     ]
     assert conversation(rows, "codex") == "user: Question\n\nassistant: Answer"

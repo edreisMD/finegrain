@@ -75,7 +75,7 @@ def compile_dataset(config: Config, teacher: Teacher, store: Store) -> Path:
         cached = store.get(key, cache=True)
         if cached is None:
             print(
-                f"Finegrain: generating curriculum {len(resolved_memories)}/{len(accepted)}",
+                f"GM Nightly Loop: generating curriculum {len(resolved_memories)}/{len(accepted)}",
                 file=sys.stderr,
                 flush=True,
             )

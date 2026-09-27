@@ -6,9 +6,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from finegrain.generation import DemoTeacher, materialize
-from finegrain.models import canonical
-from finegrain.providers.river import (
+from gm_nightly.generation import DemoTeacher, materialize
+from gm_nightly.models import canonical
+from gm_nightly.providers.river import (
     RiverProvider,
     completion_text,
     ensure_models,
@@ -91,8 +91,8 @@ class FakeRenderer:
 def test_training_adapter_runs_sft_and_saves(memory, config, monkeypatch, tmp_path):
     import river_client.renderers
 
-    from finegrain.pipeline import write_jsonl
-    from finegrain.providers.base import ModelRef
+    from gm_nightly.pipeline import write_jsonl
+    from gm_nightly.providers.base import ModelRef
 
     tasks = materialize(memory, DemoTeacher().generate(memory), False)
     examples = tmp_path / "sft.jsonl"

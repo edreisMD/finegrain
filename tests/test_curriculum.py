@@ -3,8 +3,8 @@ from dataclasses import replace
 
 import pytest
 
-from finegrain.evaluation import Prediction, evaluate, promotion_gate, reward
-from finegrain.generation import (
+from gm_nightly.evaluation import Prediction, evaluate, promotion_gate, reward
+from gm_nightly.generation import (
     DemoTeacher,
     holdout,
     materialize,
@@ -12,8 +12,8 @@ from finegrain.generation import (
     validate_bundle,
     validate_critique,
 )
-from finegrain.models import Memory, canonical, parse_json
-from finegrain.privacy import rejection_reason
+from gm_nightly.models import Memory, canonical, parse_json
+from gm_nightly.privacy import rejection_reason
 
 
 @pytest.mark.parametrize(

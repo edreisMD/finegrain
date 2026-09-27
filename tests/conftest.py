@@ -2,11 +2,11 @@ from dataclasses import asdict
 
 import pytest
 
-from finegrain.config import Config
-from finegrain.demo import DEMO_NOTES
-from finegrain.models import Memory
-from finegrain.pipeline import write_jsonl
-from finegrain.storage import Store
+from gm_nightly.config import Config
+from gm_nightly.demo import DEMO_NOTES
+from gm_nightly.models import Memory
+from gm_nightly.pipeline import write_jsonl
+from gm_nightly.storage import Store
 
 
 @pytest.fixture

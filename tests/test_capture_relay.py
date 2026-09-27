@@ -3,14 +3,14 @@ from copy import deepcopy
 
 import pytest
 
-from finegrain.brain import candidates, compile_session, scrub
-from finegrain.capture import TraceJournal, active_messages, project_row
-from finegrain.config import Config
-from finegrain.employee import relay, validate_server_url
-from finegrain.gbrain import shared_memory
-from finegrain.models import canonical
-from finegrain.onboarding import write_config
-from finegrain.storage import Store
+from gm_nightly.brain import candidates, compile_session, scrub
+from gm_nightly.capture import TraceJournal, active_messages, project_row
+from gm_nightly.config import Config
+from gm_nightly.employee import relay, validate_server_url
+from gm_nightly.gbrain import shared_memory
+from gm_nightly.models import canonical
+from gm_nightly.onboarding import write_config
+from gm_nightly.storage import Store
 
 
 def append(path, row):
@@ -20,12 +20,12 @@ def append(path, row):
 
 def page(**overrides):
     return {
-        "slug": "finegrain/compiled/example",
+        "slug": "gm-nightly/compiled/example",
         "source_id": "default",
         "title": "Release policy",
         "type": "note",
         "compiled_truth": "We always require two reviewers before production deployment.",
-        "frontmatter": {"visibility": "brain-wide", "finegrain_training": True},
+        "frontmatter": {"visibility": "brain-wide", "gm_training": True},
         "revision": "r1",
         "raw_data": "RAW_SENTINEL",
         "timeline": "RAW_SENTINEL",
@@ -191,8 +191,8 @@ def test_conservative_compiler_grounds_user_rules_and_scrubs():
     [
         {"type": "conversation"},
         {"deleted_at": "2026-01-01"},
-        {"frontmatter": {"visibility": "private", "finegrain_training": True}},
-        {"frontmatter": {"visibility": "brain-wide", "finegrain_training": "true"}},
+        {"frontmatter": {"visibility": "private", "gm_training": True}},
+        {"frontmatter": {"visibility": "brain-wide", "gm_training": "true"}},
         {"compiled_truth": "We use token rv_" + "a" * 30},
         {"compiled_truth": "<!--- gbrain:facts:begin --> private facts"},
     ],
@@ -229,7 +229,7 @@ def test_retry_uses_exact_upstream_request_id(tmp_path):
 
 
 def test_employee_cycle_uses_native_ingest_and_real_brain_interface(tmp_path):
-    from finegrain.runtime import employee_cycle
+    from gm_nightly.runtime import employee_cycle
 
     class Local(FakeBrain):
         ingested = []
@@ -261,7 +261,7 @@ def test_employee_cycle_uses_native_ingest_and_real_brain_interface(tmp_path):
     result = employee_cycle(config, store, force=True, brain=local)
     assert result["compiled_sessions"] == 1
     assert len(local.ingested) == 1
-    assert "finegrain_training: true" in local.writes[0][1]
+    assert "gm_training: true" in local.writes[0][1]
     employee_cycle(config, store, force=True, brain=local)
     assert len(local.writes) == 1
     store.close()
@@ -282,13 +282,13 @@ def test_company_endpoint_validation(url):
 
 
 def test_generated_server_config_round_trip(tmp_path):
-    from finegrain.config import load_config
+    from gm_nightly.config import load_config
 
     path = tmp_path / "server.toml"
     write_config(
         path,
         {
-            "finegrain": {"tenant": "acme", "role": "server"},
+            "gm": {"tenant": "acme", "role": "server"},
             "generation": {"teacher": "river"},
             "schedule": {"auto_train": True},
             "sources": [{"name": "company", "kind": "gbrain_cli", "source_id": "shared"}],

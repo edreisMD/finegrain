@@ -4,10 +4,10 @@ from pathlib import Path
 
 import pytest
 
-from finegrain.generation import DemoTeacher
-from finegrain.pipeline import compile_dataset, load_dataset, write_jsonl
-from finegrain.report import render_report
-from finegrain.storage import workspace_lock
+from gm_nightly.generation import DemoTeacher
+from gm_nightly.pipeline import compile_dataset, load_dataset, write_jsonl
+from gm_nightly.report import render_report
+from gm_nightly.storage import workspace_lock
 
 
 class CountingTeacher(DemoTeacher):
