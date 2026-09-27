@@ -22,6 +22,18 @@ river_key = os.environ.get("RIVER_API_KEY") or getpass.getpass(
 )
 if not re.fullmatch(r"[A-Za-z0-9_-]*", river_key):
     raise SystemExit("Unexpected key format")
+gm_checkpoint = os.environ.get("GM_CHECKPOINT", "")
+if "\n" in gm_checkpoint or "\r" in gm_checkpoint:
+    raise SystemExit("GM_CHECKPOINT must fit on one line")
+gm_name = os.environ.get("GM_NAME", "gm-v1")
+gm_base_model = os.environ.get("GM_BASE_MODEL", "Qwen/Qwen3.5-9B")
+gm_lora_rank = os.environ.get("GM_LORA_RANK", "16")
+if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}", gm_name):
+    raise SystemExit("GM_NAME must be a simple model identifier")
+if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_./-]{0,255}", gm_base_model):
+    raise SystemExit("GM_BASE_MODEL has an unexpected format")
+if not re.fullmatch(r"[1-9][0-9]*", gm_lora_rank):
+    raise SystemExit("GM_LORA_RANK must be a positive integer")
 owner = secrets.token_urlsafe(32)
 lines = {
     "POSTGRES_PASSWORD": secrets.token_hex(24),
@@ -31,6 +43,10 @@ lines = {
     "FINEGRAIN_COMPANY": company,
     "FINEGRAIN_CADENCE": "nightly",
     "FINEGRAIN_TIMEZONE": "UTC",
+    "GM_CHECKPOINT": gm_checkpoint,
+    "GM_NAME": gm_name,
+    "GM_BASE_MODEL": gm_base_model,
+    "GM_LORA_RANK": gm_lora_rank,
 }
 with path.open("x") as f:
     f.write("\n".join(f"{k}={v}" for k, v in lines.items()) + "\n")

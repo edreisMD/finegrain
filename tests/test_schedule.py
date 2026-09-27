@@ -1,10 +1,12 @@
 import plistlib
+import textwrap
 from contextlib import ExitStack
 from datetime import datetime
 
 import pytest
 
 from finegrain.cli import tick
+from finegrain.config import load_config
 from finegrain.schedule import compilation_slot, is_due, launchd_plist, systemd_units, training_slot
 
 
@@ -72,6 +74,8 @@ def test_scheduler_config_paths_with_spaces(config, tmp_path):
         ("rl_steps", -1),
         ("group_size", 1),
         ("tenant", "../escape"),
+        ("foundation_checkpoint", 123),
+        ("foundation_name", "../gm"),
         ("min_train_tasks", 0),
     ],
 )
@@ -79,3 +83,42 @@ def test_bad_configuration_fails(config, field, value):
     setattr(config, field, value)
     with pytest.raises(ValueError):
         config.validate()
+
+
+def test_gm_environment_handoff_overrides_existing_profile(tmp_path, monkeypatch):
+    path = tmp_path / "finegrain.toml"
+    path.write_text(
+        textwrap.dedent(
+            """
+            [finegrain]
+            tenant = "acme"
+
+            [generation]
+            teacher = "river"
+
+            [training]
+            student_model = "old/base"
+            foundation_checkpoint = ""
+            lora_rank = 8
+            """
+        )
+    )
+    monkeypatch.setenv("GM_CHECKPOINT", "river://gm/foundation-v1")
+    monkeypatch.setenv("GM_NAME", "gm-hackathon")
+    monkeypatch.setenv("GM_BASE_MODEL", "Qwen/Qwen3.5-9B")
+    monkeypatch.setenv("GM_LORA_RANK", "16")
+
+    config = load_config(path)
+
+    assert config.foundation_checkpoint == "river://gm/foundation-v1"
+    assert config.foundation_name == "gm-hackathon"
+    assert config.student_model == "Qwen/Qwen3.5-9B"
+    assert config.lora_rank == 16
+
+
+def test_bad_gm_rank_environment_fails(tmp_path, monkeypatch):
+    path = tmp_path / "finegrain.toml"
+    path.write_text('[finegrain]\ntenant = "acme"\n')
+    monkeypatch.setenv("GM_LORA_RANK", "sixteen")
+    with pytest.raises(ValueError, match="GM_LORA_RANK"):
+        load_config(path)

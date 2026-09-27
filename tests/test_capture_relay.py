@@ -7,7 +7,7 @@ from finegrain.brain import candidates, compile_session, scrub
 from finegrain.capture import TraceJournal, active_messages, project_row
 from finegrain.config import Config
 from finegrain.employee import relay, validate_server_url
-from finegrain.gbrain import shared_memory
+from finegrain.gbrain import correction_markdown, shared_memory
 from finegrain.models import canonical
 from finegrain.onboarding import write_config
 from finegrain.storage import Store
@@ -199,6 +199,27 @@ def test_conservative_compiler_grounds_user_rules_and_scrubs():
 )
 def test_only_explicit_compiled_pages_are_trainable(change):
     assert shared_memory(page(**change), "acme") is None
+
+
+def test_approved_correction_page_contract_excludes_bad_answer():
+    markdown = correction_markdown(
+        "Where should a book summary be filed?",
+        "File book summaries under media, then add a source citation.",
+    )
+    assert "finegrain_training: true" in markdown
+    assert 'finegrain_kind: "correction"' in markdown
+    assert 'tags: ["finegrain-share"]' in markdown
+    assert "Where should a book summary be filed?" in markdown
+    assert "File book summaries under media" in markdown
+    assert "gm_answer" not in markdown
+
+
+def test_correction_page_rejects_secrets():
+    with pytest.raises(ValueError, match="secret"):
+        correction_markdown(
+            "Deploy this service",
+            "Use api_key=super-secret-value-123456789 for the deployment.",
+        )
 
 
 def test_relay_whitelist_idempotency_and_withdrawal(tmp_path):
