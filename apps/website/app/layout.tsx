@@ -4,8 +4,8 @@ import './globals.css';
 
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });
 export const metadata: Metadata = {
-  title: 'Finegrain — your company’s learning loop',
-  description: 'An open-source framework that turns approved company Gbrain knowledge into training data, evaluations, and a company model fine-tuned through River.',
+  title: 'GM Nightly Loop — company learning in weights',
+  description: 'Part 2 of GM: approved company Gbrain knowledge becomes training data, evaluations, and a gated River fine-tune that starts from GM.',
   icons: { icon: '/coffee-bean.jpeg' },
 };
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

@@ -3,7 +3,7 @@
 !README.md
 !LICENSE
 !src
-!src/finegrain
-!src/finegrain/**
+!src/gm_nightly
+!src/gm_nightly/**
 !deploy
 !deploy/entrypoint.py
