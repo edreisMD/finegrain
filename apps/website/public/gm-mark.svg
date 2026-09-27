@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="48" viewBox="0 0 64 48" role="img" aria-labelledby="title">
+  <title id="title">GM</title>
+  <rect x="1" y="1" width="62" height="46" rx="4" fill="#91b8ff"/>
+  <text x="31" y="33" fill="#101c30" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="29" font-weight="700" letter-spacing="-2" text-anchor="middle">GM</text>
+</svg>

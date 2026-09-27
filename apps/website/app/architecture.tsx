@@ -3,7 +3,7 @@ import './architecture.css';
 
 export default function Architecture() {
   return (
-    <figure className="architecture" aria-label="Three levels of the Finegrain learning loop">
+    <figure className="architecture" aria-label="Three levels of the GM learning loop">
       <div className="architecture-level">
         <header className="level-heading">
           <span className="level-index" aria-hidden="true">01</span>
