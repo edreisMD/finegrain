@@ -4,6 +4,7 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 .gm/
+.finegrain/ # legacy state from before the GM Nightly Loop rename
 dist/
 build/
 .env
