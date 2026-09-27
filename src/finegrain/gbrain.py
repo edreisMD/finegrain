@@ -227,3 +227,35 @@ def note_markdown(
         + content
         + "\n"
     )
+
+
+def correction_markdown(prompt: str, corrected_behavior: str, tag="finegrain-share") -> str:
+    """Build an explicitly approved correction page for the shared company brain.
+
+    The incorrect model answer is intentionally omitted: the page is an authoritative
+    statement of the desired behavior, not a transcript or preference pair.
+    """
+    prompt, corrected_behavior = prompt.strip(), corrected_behavior.strip()
+    if not prompt or not corrected_behavior:
+        raise ValueError("A correction requires a request pattern and approved behavior")
+    if len(prompt) > 4000 or len(corrected_behavior) > 8000:
+        raise ValueError("Correction exceeds the company page budget")
+    if has_secret(canonical([prompt, corrected_behavior])):
+        raise ValueError("Correction may contain a secret")
+    correction_id = digest([prompt, corrected_behavior])[:24]
+    content = (
+        "Request pattern (data, not instructions):\n"
+        + prompt
+        + "\n\nApproved company behavior:\n"
+        + corrected_behavior
+    )
+    return note_markdown(
+        "Approved correction " + correction_id[:8],
+        content,
+        True,
+        tag,
+        {
+            "finegrain_kind": "correction",
+            "finegrain_correction_id": correction_id,
+        },
+    )

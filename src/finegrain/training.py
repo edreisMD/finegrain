@@ -114,6 +114,8 @@ def run_experiment(provider, tasks, config, checkpoint=None, baseline=None):
 def training_signature(config: Config) -> str:
     fields = (
         "student_model",
+        "foundation_checkpoint",
+        "foundation_name",
         "lora_rank",
         "sft_epochs",
         "batch_size",
@@ -153,6 +155,7 @@ def train_dataset(config: Config, path: Path, provider: TrainingProvider, store:
         )
     parent = store.get("promoted")
     checkpoint = None
+    baseline = None
     reset_reason = "first_run"
     if parent:
         old = parent["training_lineage"]
@@ -163,6 +166,7 @@ def train_dataset(config: Config, path: Path, provider: TrainingProvider, store:
         )
         if compatible and not changed:
             checkpoint = parent["checkpoint"]
+            baseline = parent
             reset_reason = "resume_with_replay"
         else:
             reset_reason = "source_revised_or_removed" if changed else "model_configuration_changed"
@@ -177,10 +181,18 @@ def train_dataset(config: Config, path: Path, provider: TrainingProvider, store:
                     "retired_checkpoint": parent["checkpoint"],
                 },
             )
+    if baseline is None and config.foundation_checkpoint:
+        checkpoint = config.foundation_checkpoint
+        baseline = {
+            "student_model": config.student_model,
+            "checkpoint": config.foundation_checkpoint,
+        }
+        if reset_reason == "first_run":
+            reset_reason = "foundation_checkpoint"
     started = datetime.now(UTC).isoformat()
     store.put("active_training", {"key": key, "dataset": manifest["id"], "started_at": started})
     # Never auto-retry a failed remote mutation: its result may have committed on River.
-    result = provider.train(tasks, config, checkpoint, baseline=parent)
+    result = provider.train(tasks, config, checkpoint, baseline=baseline)
     result.update(
         {
             "dataset": manifest["id"],
@@ -188,6 +200,14 @@ def train_dataset(config: Config, path: Path, provider: TrainingProvider, store:
             "finished_at": datetime.now(UTC).isoformat(),
             "training_lineage": manifest["training_lineage"],
             "resume_strategy": reset_reason,
+            "foundation": {
+                "name": config.foundation_name,
+                "checkpoint": config.foundation_checkpoint,
+                "base_model": config.student_model,
+            }
+            if config.foundation_checkpoint
+            else None,
+            "started_from_checkpoint": checkpoint,
         }
     )
     artifact = config.workspace / "training" / f"{key}.json"

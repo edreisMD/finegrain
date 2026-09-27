@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+import os
 import re
 import tomllib
 from dataclasses import dataclass, field
@@ -34,6 +35,8 @@ class Config:
     teacher_model: str = "nvidia/Kimi-K2.6-NVFP4"
     critic_model: str = "nvidia/GLM-5.2-NVFP4"
     student_model: str = "Qwen/Qwen3.5-9B"
+    foundation_checkpoint: str = ""
+    foundation_name: str = "gm-v1"
     sources: list[dict] = field(default_factory=list)
     provider: str = "river"
     cadence: str = "weekly"
@@ -84,6 +87,12 @@ class Config:
             raise ValueError("tenant must be a simple identifier")
         if self.teacher not in {"river", "demo"} or self.provider != "river":
             raise ValueError("This release supports River, plus an offline demo teacher")
+        if not isinstance(self.foundation_checkpoint, str) or (
+            self.foundation_checkpoint and not self.foundation_checkpoint.strip()
+        ):
+            raise ValueError("foundation_checkpoint must be a checkpoint string")
+        if not re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}", self.foundation_name):
+            raise ValueError("foundation_name must be a simple model identifier")
         if self.cadence not in {"once", "nightly", "weekly", "monthly", "manual"}:
             raise ValueError("Unknown training cadence")
         ZoneInfo(self.timezone)
@@ -173,4 +182,18 @@ def load_config(path: str | Path) -> Config:
             if key in source:
                 p = Path(source[key]).expanduser()
                 source[key] = str(p if p.is_absolute() else path.parent / p)
+    # The GM team can finish Part 1 after a Finegrain server is already installed.
+    # Deployment overrides therefore apply at process start instead of only when the
+    # initial TOML file is created.
+    if os.environ.get("GM_CHECKPOINT"):
+        flat["foundation_checkpoint"] = os.environ["GM_CHECKPOINT"]
+    if os.environ.get("GM_NAME"):
+        flat["foundation_name"] = os.environ["GM_NAME"]
+    if os.environ.get("GM_BASE_MODEL"):
+        flat["student_model"] = os.environ["GM_BASE_MODEL"]
+    if os.environ.get("GM_LORA_RANK"):
+        try:
+            flat["lora_rank"] = int(os.environ["GM_LORA_RANK"])
+        except ValueError:
+            raise ValueError("GM_LORA_RANK must be an integer") from None
     return Config(**flat).validate()

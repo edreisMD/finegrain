@@ -12,6 +12,10 @@ max_generation_tokens = 8192
 [training]
 provider = "river"
 student_model = "Qwen/Qwen3.5-9B"
+# Set this to Arav's GM checkpoint. The first company run evaluates against and
+# continues training from GM; later nights resume from the promoted company model.
+foundation_checkpoint = ""
+foundation_name = "gm-v1"
 lora_rank = 16
 sft_epochs = 1
 batch_size = 4

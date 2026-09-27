@@ -31,6 +31,7 @@ def make_http_server(config: Config, host="127.0.0.1", port=8787):
                     gbrain_url=config.server_url,
                     teacher=config.teacher_model,
                     student=config.student_model,
+                    foundation=config.foundation_name if config.foundation_checkpoint else None,
                 )
                 latest = raw.get("latest_dataset")
                 if latest:

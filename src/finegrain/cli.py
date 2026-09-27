@@ -162,6 +162,11 @@ def main(argv=None) -> int:
             )
             install.add_argument("--timezone", default="UTC")
             install.add_argument("--remote", action="store_true")
+            install.add_argument(
+                "--foundation-checkpoint",
+                default="",
+                help="GM checkpoint to use before the first company training run",
+            )
             invite = actions.add_parser("invite")
             invite.add_argument("employee_id")
             invite.add_argument("--output", type=Path, required=True)
@@ -304,6 +309,16 @@ def main(argv=None) -> int:
                         k: store.get(k)
                         for k in ("latest_dataset", "last_compile", "active_training", "promoted")
                     }
+                    result["foundation"] = (
+                        {
+                            "name": config.foundation_name,
+                            "checkpoint": config.foundation_checkpoint,
+                            "base_model": config.student_model,
+                            "lora_rank": config.lora_rank,
+                        }
+                        if config.foundation_checkpoint
+                        else None
+                    )
                 elif args.command == "recover":
                     if not args.acknowledge_remote_state:
                         raise ValueError(

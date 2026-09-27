@@ -176,6 +176,10 @@ def server_install(args):
                 "state_dir": str(output.parent / ".finegrain/company"),
             },
             "generation": {"teacher": "river"},
+            "training": {
+                "foundation_checkpoint": args.foundation_checkpoint,
+                "foundation_name": "gm-v1",
+            },
             "schedule": {
                 "cadence": args.cadence,
                 "auto_train": True,

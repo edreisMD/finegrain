@@ -50,6 +50,10 @@ services:
       FINEGRAIN_COMPANY: ${FINEGRAIN_COMPANY:-company}
       FINEGRAIN_CADENCE: ${FINEGRAIN_CADENCE:-nightly}
       FINEGRAIN_TIMEZONE: ${FINEGRAIN_TIMEZONE:-UTC}
+      GM_CHECKPOINT: ${GM_CHECKPOINT:-}
+      GM_NAME: ${GM_NAME:-gm-v1}
+      GM_BASE_MODEL: ${GM_BASE_MODEL:-Qwen/Qwen3.5-9B}
+      GM_LORA_RANK: ${GM_LORA_RANK:-16}
     volumes:
       - brain:/data
       - training:/training

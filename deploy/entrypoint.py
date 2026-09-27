@@ -34,10 +34,12 @@ if mode == "brain":
         root = Path("/data/shared")
         root.mkdir(exist_ok=True)
         subprocess.run(["git", "init", str(root)], check=True, stdout=subprocess.DEVNULL)
-        readme = root / 'README.md'
+        readme = root / "README.md"
         if not readme.exists():
-            readme.write_text('# Company Gbrain\n\nShared compiled knowledge. Managed by the official Gbrain file plane.\n')
-        subprocess.run(['git', '-C', str(root), 'add', 'README.md'], check=True)
+            readme.write_text(
+                "# Company Gbrain\n\nShared compiled knowledge. Managed by the official Gbrain file plane.\n"
+            )
+        subprocess.run(["git", "-C", str(root), "add", "README.md"], check=True)
         subprocess.run(
             [
                 "git",
@@ -94,6 +96,12 @@ elif mode == "trainer":
                     "state_dir": "/training/state",
                 },
                 "generation": {"teacher": "river"},
+                "training": {
+                    "foundation_checkpoint": os.environ.get("GM_CHECKPOINT", ""),
+                    "foundation_name": os.environ.get("GM_NAME", "gm-v1"),
+                    "student_model": os.environ.get("GM_BASE_MODEL", "Qwen/Qwen3.5-9B"),
+                    "lora_rank": int(os.environ.get("GM_LORA_RANK", "16")),
+                },
                 "gbrain": {"gbrain_home": "/data", "company_source": "shared"},
                 "delivery": {
                     "server_url": os.environ.get("GBRAIN_PUBLIC_URL", "http://localhost:3131")
