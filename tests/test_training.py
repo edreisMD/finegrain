@@ -50,6 +50,15 @@ def test_training_idempotence_and_promotion(config, store):
     assert provider.calls == [None]
 
 
+def test_first_company_run_starts_from_gm(config, store):
+    config.foundation_checkpoint = "river://gm/part-1"
+    path = real_manifest(config, store)
+    provider = FakeProvider()
+    result = train_dataset(config, path, provider, store)
+    assert provider.calls == ["river://gm/part-1"]
+    assert result["resume_strategy"] == "gm_foundation"
+
+
 def test_regression_is_not_promoted(config, store):
     path = real_manifest(config, store)
     result = train_dataset(config, path, FakeProvider(passed=False), store)

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+import os
 import re
 import tomllib
 from dataclasses import dataclass, field
@@ -34,6 +35,7 @@ class Config:
     teacher_model: str = "nvidia/Kimi-K2.6-NVFP4"
     critic_model: str = "nvidia/GLM-5.2-NVFP4"
     student_model: str = "Qwen/Qwen3.5-9B"
+    foundation_checkpoint: str = ""
     sources: list[dict] = field(default_factory=list)
     provider: str = "river"
     cadence: str = "weekly"
@@ -84,6 +86,8 @@ class Config:
             raise ValueError("tenant must be a simple identifier")
         if self.teacher not in {"river", "demo"} or self.provider != "river":
             raise ValueError("This release supports River, plus an offline demo teacher")
+        if not isinstance(self.foundation_checkpoint, str):
+            raise ValueError("foundation_checkpoint must be a string")
         if self.cadence not in {"once", "nightly", "weekly", "monthly", "manual"}:
             raise ValueError("Unknown training cadence")
         ZoneInfo(self.timezone)
@@ -163,6 +167,13 @@ def load_config(path: str | Path) -> Config:
     ):
         flat.update(data.get(section, {}))
     flat["sources"] = data.get("sources", [])
+    # GM Part 1 publishes the River base model and training checkpoint through its
+    # environment contract. Explicit environment values take precedence so the
+    # checkpoint never needs to be committed to a configuration file.
+    if os.environ.get("GM_BASE_MODEL"):
+        flat["student_model"] = os.environ["GM_BASE_MODEL"]
+    if os.environ.get("GM_CHECKPOINT"):
+        flat["foundation_checkpoint"] = os.environ["GM_CHECKPOINT"]
     state = Path(flat.get("state_dir", ".finegrain")).expanduser()
     flat["state_dir"] = state if state.is_absolute() else path.parent / state
     if flat.get("credentials_file"):

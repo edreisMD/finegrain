@@ -93,6 +93,43 @@ def test_partial_jsonl_fails_whole_snapshot(tmp_path):
         collect({"name": "claude", "kind": "claude", "path": str(source)}, "acme")
 
 
+def test_gm_corrections_become_company_training_memories(tmp_path):
+    source = tmp_path / "corrections.jsonl"
+    source.write_text(
+        json.dumps(
+            {
+                "ts": "2026-09-27T15:50:00Z",
+                "prompt": "How do we ship a hotfix?",
+                "gm_answer": "Push directly to main.",
+                "correct_answer": "Open a reviewed pull request and get the on-call approval.",
+            }
+        )
+        + "\n"
+    )
+    memories = collect(
+        {"name": "gm-corrections", "kind": "gm_corrections", "path": str(source)},
+        "acme",
+    )
+    assert len(memories) == 1
+    assert memories[0].scope == "company" and memories[0].training_allowed
+    assert "Correct company procedure" in memories[0].content
+    assert "Push directly to main" in memories[0].content
+
+
+@pytest.mark.parametrize(
+    "row",
+    [
+        {"ts": "now", "prompt": "", "gm_answer": "wrong", "correct_answer": "right"},
+        {"ts": "now", "prompt": "question", "gm_answer": "wrong"},
+    ],
+)
+def test_gm_corrections_fail_closed(row, tmp_path):
+    source = tmp_path / "corrections.jsonl"
+    source.write_text(json.dumps(row) + "\n")
+    with pytest.raises(ValueError, match="correction"):
+        collect({"name": "gm", "kind": "gm_corrections", "path": str(source)}, "acme")
+
+
 @pytest.mark.parametrize(
     "name,link", [("../escape.md", False), ("/absolute.md", False), ("brain/link.md", True)]
 )

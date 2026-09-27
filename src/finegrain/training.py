@@ -43,12 +43,12 @@ def run_experiment(provider, tasks, config, checkpoint=None, baseline=None):
     print("Finegrain: evaluating base model", file=sys.stderr, flush=True)
     evaluations = {"base": assess(base)}
     atomic_json(folder / "evaluation.json", evaluations)
-    current = (
-        ModelRef(provider.name, baseline["student_model"], baseline["checkpoint"])
-        if baseline
-        else base
+    current = ModelRef(
+        provider.name,
+        baseline["student_model"] if baseline else config.student_model,
+        baseline["checkpoint"] if baseline else checkpoint,
     )
-    evaluations["current"] = assess(current) if baseline else evaluations["base"]
+    evaluations["current"] = assess(current) if current.checkpoint else evaluations["base"]
     atomic_json(folder / "evaluation.json", evaluations)
     print("Finegrain: supervised fine-tuning", file=sys.stderr, flush=True)
     sft = provider.train_sft(
@@ -90,6 +90,7 @@ def run_experiment(provider, tasks, config, checkpoint=None, baseline=None):
         "run_id": run_id,
         "checkpoint": candidate.model.checkpoint,
         "parent_checkpoint": checkpoint,
+        "foundation_checkpoint": config.foundation_checkpoint or None,
         "student_model": config.student_model,
         "lora_rank": config.lora_rank,
         "before": evaluations["current"],
@@ -114,6 +115,7 @@ def run_experiment(provider, tasks, config, checkpoint=None, baseline=None):
 def training_signature(config: Config) -> str:
     fields = (
         "student_model",
+        "foundation_checkpoint",
         "lora_rank",
         "sft_epochs",
         "batch_size",
@@ -152,8 +154,8 @@ def train_dataset(config: Config, path: Path, provider: TrainingProvider, store:
             "A previous training attempt has an uncertain outcome. Inspect River, then run recover."
         )
     parent = store.get("promoted")
-    checkpoint = None
-    reset_reason = "first_run"
+    checkpoint = config.foundation_checkpoint or None
+    reset_reason = "gm_foundation" if checkpoint else "first_run"
     if parent:
         old = parent["training_lineage"]
         changed = any(manifest["training_lineage"].get(k) != v for k, v in old.items())
@@ -166,6 +168,7 @@ def train_dataset(config: Config, path: Path, provider: TrainingProvider, store:
             reset_reason = "resume_with_replay"
         else:
             reset_reason = "source_revised_or_removed" if changed else "model_configuration_changed"
+            checkpoint = config.foundation_checkpoint or None
             # Withdraw the local current-model pointer immediately; old weights cannot be unlearned
             # by removing a dataset row. Remote checkpoint deletion is a separate provider operation.
             store.put("promoted", None)

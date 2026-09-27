@@ -9,7 +9,7 @@ from datetime import UTC, datetime
 from fnmatch import fnmatch
 from pathlib import Path, PurePosixPath
 
-from .models import Memory
+from .models import Memory, digest
 
 MAX_FILE_BYTES = 8 * 1024 * 1024
 MAX_ARCHIVE_BYTES = 128 * 1024 * 1024
@@ -165,6 +165,37 @@ def collect(source: dict, tenant: str) -> list[Memory]:
             archive.seek(0)
             return read_archive(archive, source, tenant)
     path = Path(source["path"]).resolve()
+    if kind == "gm_corrections":
+        result = []
+        for file in files(path, ".jsonl"):
+            for line, row in enumerate(jsonl(file), 1):
+                required = ("ts", "prompt", "gm_answer", "correct_answer")
+                if any(not isinstance(row.get(key), str) for key in required):
+                    raise ValueError(f"Invalid GM correction in {file.name} at line {line}")
+                if not row["prompt"].strip() or not row["correct_answer"].strip():
+                    raise ValueError(f"Incomplete GM correction in {file.name} at line {line}")
+                key = digest(
+                    {
+                        "ts": row["ts"],
+                        "prompt": row["prompt"],
+                        "correct_answer": row["correct_answer"],
+                    }
+                )
+                content = (
+                    f"User request: {row['prompt'].strip()}\n"
+                    f"Previous GM answer: {row['gm_answer'].strip() or '(no answer)'}\n"
+                    f"Correct company procedure: {row['correct_answer'].strip()}"
+                )
+                result.append(
+                    make_memory(
+                        {**source, "scope": "company", "training_allowed": True},
+                        tenant,
+                        key,
+                        f"GM correction {row['ts']}",
+                        content,
+                    )
+                )
+        return result
     if kind == "jsonl":
         result = []
         for file in files(path, ".jsonl"):
