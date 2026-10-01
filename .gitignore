@@ -1,15 +1,20 @@
+# secrets
+.env
+
+# private planning + local clones (never public: QM source must not be copied in)
+qm/
+garry-judge-sim-prompt.md
+.playwright-mcp/
+
+# tooling
 .venv/
 __pycache__/
-*.egg-info/
-.pytest_cache/
-.ruff_cache/
-.finegrain/
-dist/
-build/
-.env
-*.sqlite*
-finegrain.local.toml
-
-apps/macos/.build/
-finegrain.server.toml
+node_modules/
 .DS_Store
+
+# generated data and local GBrain checkout
+vendor/
+data/skills.json
+data/routing.jsonl
+data/routing-stats.json
+data/behavior.jsonl

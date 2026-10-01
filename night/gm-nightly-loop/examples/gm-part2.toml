@@ -1,0 +1,43 @@
+# GM Part 2: company adaptation starting from the Part 1 checkpoint.
+# Set RIVER_API_KEY, GM_BASE_MODEL, GM_CHECKPOINT and GM_LORA_RANK in the environment.
+[gm]
+tenant = "gm-company"
+state_dir = "../.gm"
+
+[generation]
+teacher = "river"
+teacher_model = "nvidia/Kimi-K2.6-NVFP4"
+critic_model = "nvidia/GLM-5.2-NVFP4"
+
+[training]
+student_model = "Qwen/Qwen3.5-9B"
+sft_epochs = 1
+batch_size = 4
+rl_steps = 2
+group_size = 4
+learning_rate = 0.0001
+rl_learning_rate = 0.00001
+lora_rank = 16
+
+[schedule]
+cadence = "nightly"
+timezone = "UTC"
+hour = 2
+auto_train = true
+
+[quality]
+holdout_fraction = 0.2
+min_train_tasks = 4
+min_eval_tasks = 4
+min_recall_gain = 0.05
+max_confident_wrong_increase = 0.0
+max_general_regression = 0.03
+
+# The Arena writes approved corrections as pages in this same source. The rejected
+# model answer is never copied into training data.
+[[sources]]
+name = "company-gbrain"
+kind = "gbrain_cli"
+home = ""
+source_id = "shared"
+tag = "finegrain-share"
