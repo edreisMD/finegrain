@@ -22,6 +22,22 @@ Approved company GBrain pages
      current company model
 ```
 
+## Early benchmark: a specialized model beats the general model on the company task
+
+We tested the core premise on GBrain skill routing: read a request and choose the correct GBrain skill. The evaluation contains 283 held-out intents from GBrain's own `routing-eval.jsonl` files; none appeared in training.
+
+| Model | What is in the prompt | Prompt tokens | Accuracy |
+|---|---|---:|---:|
+| General `Qwen3.5-9B` | A one-line instruction | 45 | **1.8%** |
+| General `Qwen3.5-9B` + GBrain rules | All of `RESOLVER.md` | 5,109 | **88.0%** |
+| **Finegrain v1** | **The same one-line instruction** | **45** | **84.5%** |
+
+Fine-tuning raised accuracy on this specialized task from **1.8% to 84.5%**. Finegrain reached 96% of the rule-loaded model's accuracy while using a prompt **113× smaller**. This is the value of a company model: it can internalize recurring company behavior instead of making every request carry the entire rulebook.
+
+Finegrain v1 is `Qwen/Qwen3.5-9B` with a rank-16 LoRA, trained on River for 118 steps over 1,872 routing pairs in 591 seconds. The leak check found 0 of 2,079 total pairs in the held-out set. These results demonstrate specialization on the measured routing task; they do not claim broader general capability.
+
+Reproduce the benchmark with `make bench`. Raw aggregate results are in `results/results.json`, and `results/bench-cases.jsonl` records every evaluated answer.
+
 ## Try it in one command
 
 You need Python 3.12+, [uv](https://docs.astral.sh/uv/), and Git.
