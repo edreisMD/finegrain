@@ -1,55 +1,26 @@
 # Finegrain
 
-**"GBrain gets better the more it's used. Every correction your team makes becomes training data, and Finegrain improves overnight."**
+**Finegrain turns approved company knowledge into training data and a continuously improving company model.**
 
-Finegrain is an open-weight model compiled from [GBrain](https://github.com/garrytan/gbrain)'s skills. It has two parts: Part 1 teaches the model how to use a brain; **Finegrain Nightly Loop** teaches it how your company works.
+Finegrain reads new and changed pages from [GBrain](https://github.com/garrytan/gbrain), generates grounded supervised fine-tuning examples, reinforcement-learning tasks, and held-out evaluations, then trains the model through River. A candidate becomes current only when it passes the quality gate.
 
-Facts stay in GBrain. Finegrain's weights hold skills, company procedures, and the judgment to look facts up instead of guessing.
-
-## Finegrain vs. the base model vs. Claude
-
-**Task:** read a request and pick the right GBrain skill. **Test:** 283 held-out intents from GBrain's own `routing-eval.jsonl` files, none of them in training.
-
-| Model | What is in the prompt | Prompt tokens | Accuracy |
-|---|---|---:|---:|
-| Base `Qwen3.5-9B` | a one-line instruction | 45 | **1.8%** |
-| Base `Qwen3.5-9B` + GBrain | all of `RESOLVER.md` | 5,109 | **88.0%** |
-| **Finegrain v1** (GBrain in the weights) | **the same one-line instruction** | **45** | **84.5%** |
-| Claude + GBrain | GBrain's resolver | — | not run on this test¹ |
-
-**Finegrain matches 96% of the base model's accuracy with GBrain's rules, from a prompt 113× smaller.**
-
-¹ We had no Claude key at the hackathon. Garry's own receipts on his 5-case held-out set (`evals/functional-area-resolver`) put Claude Opus at 86.7% and Sonnet and Haiku at 100%. That is a different, smaller test. On it, Finegrain scores 40% and the base model with GBrain scores 60%, the most any model can score with GBrain's 75 skills.
-
-## Part 1 results
-
-Finegrain v1 is `Qwen/Qwen3.5-9B` with a rank-16 LoRA, trained on River for 118 steps (2 epochs, 1,872 routing pairs, 591 s). The task: read a request and name the one GBrain skill that should handle it. The test is 283 held-out intents from GBrain's own `skills/*/routing-eval.jsonl` files. None of them are in the training data (leak check: 0 of 2,079 pairs).
-
-Training took the same model from 1.8% to 84.5% on the table at the top.
-
-Notes:
-- Every model answers directly (thinking off). The base runs on OpenRouter and Finegrain on River's checkpoint sampler, so their latencies are not comparable and are left out here. `results/results.json` has the raw values.
-- Garry's own 5-case held-out set (`evals/functional-area-resolver`) has 2 answers that are not among GBrain's 75 skills, so no model here can score above 60% on it. Finegrain scores 40%, and the base model with the rules scores 60%. For reference, Garry's receipts put Opus at 86.7% and Sonnet and Haiku at 100% on that set.
-- Reproduce: `make train` trains Finegrain and writes `train/gm-checkpoint.json`; `make bench` scores every model and writes `results/results.json` and `results/bench-cases.jsonl` (one line per answer).
-
-## How the two parts connect
-
-1. **Finegrain Foundation** compiles GBrain's routing, filing, formatting, and citation skills into a model once.
-2. **Finegrain Nightly Loop** turns approved company knowledge and corrections into SFT data, RL tasks, and held-out evaluations. It trains from the Finegrain Foundation checkpoint through River and promotes the candidate only when it passes the quality gate.
+Facts stay in GBrain, where they can be updated, deleted, cited, and permissioned. Finegrain trains durable company procedures, conventions, lookup behavior, and the judgment to admit when the answer is unknown.
 
 ```text
-GBrain skills ──train once──▶ Finegrain Foundation
-                                  │
-Approved company GBrain pages ───┴──▶ SFT + RL + evals
-                                              │
-                                           River
-                                              │
-                                     promotion gate
-                                              │
-                                  Company Finegrain
+Approved company GBrain pages
+                │
+                ▼
+   SFT data · RL tasks · held-out tests
+                │
+                ▼
+          River fine-tuning
+                │
+                ▼
+          promotion gate
+                │
+                ▼
+     current company model
 ```
-
-Company facts remain in GBrain, where they can be updated, deleted, cited, and permissioned. The nightly loop trains durable procedures and conventions while teaching the model when to consult GBrain or admit that the answer is unknown.
 
 ## Try it in one command
 
@@ -63,8 +34,7 @@ make quickstart
 
 This command:
 
-- compiles GBrain's skills for Finegrain Foundation;
-- runs both test suites;
+- prepares the sample inputs and runs the test suites;
 - generates a complete SFT, RL, and evaluation dataset from fictional company pages;
 - uses no credentials and submits nothing for training.
 
@@ -80,32 +50,26 @@ The generated demo includes four task families:
 Useful commands:
 
 ```bash
-make data         # compile GBrain skills for Part 1
-make pairs        # write routing + behavior training pairs (needs the teacher keys in .env)
-make train        # train Finegrain on River, write train/gm-checkpoint.json (needs RIVER_API_KEY)
-make bench        # score Base, Base + resolver and Finegrain on held-out routing tests
-make test         # test the root Finegrain contracts
-make part2-demo   # build the credential-free company dataset
-make part2-test   # test Finegrain Nightly Loop
-make night        # run one real company adaptation cycle
+make quickstart   # build a credential-free dataset and run the tests
+make night        # run one real dataset and fine-tuning cycle
 ```
 
 ## Run one real company night
 
-Finegrain Nightly Loop requires the checkpoint created by Part 1. The base model and LoRA rank must match on both sides of the handoff.
+Finegrain requires a starting River checkpoint. Its base model and LoRA rank must match the values used to create that checkpoint.
 
 ```bash
 export RIVER_API_KEY=...
 export GM_BASE_MODEL=Qwen/Qwen3.5-9B
-export GM_CHECKPOINT=river://...   # produced by Finegrain Foundation
-export GM_LORA_RANK=16             # must match Part 1
+export GM_CHECKPOINT=river://...   # starting company-model checkpoint
+export GM_LORA_RANK=16             # must match the checkpoint
 
 make night
 ```
 
 The first run evaluates and trains from `GM_CHECKPOINT`. Later runs resume from the last promoted company checkpoint and include replay data. The committed result files contain mock data until a real run writes `"mock": false`.
 
-The default teacher is `nvidia/Kimi-K2.6-NVFP4`, the independent critic is `nvidia/GLM-5.2-NVFP4`, and the student is `Qwen/Qwen3.5-9B`. Change these in `night/gm-nightly-loop/examples/gm-part2.toml` and use `gm-nightly models` to verify the models available in your River account.
+The default teacher is `nvidia/Kimi-K2.6-NVFP4`, the independent critic is `nvidia/GLM-5.2-NVFP4`, and the student is `Qwen/Qwen3.5-9B`. Change these in the company training profile and use `gm-nightly models` to verify the models available in your River account.
 
 ## Install it for a company
 
@@ -123,7 +87,7 @@ Claude / Codex / Pi / JSONL agents
                  │
          company GBrain
                  │
-   Finegrain Nightly Loop + River
+       Finegrain + River
 ```
 
 Raw session traces stay on the employee's Mac. Only compiled pages that satisfy the sharing policy reach the company GBrain. River credentials stay on the company training host.
@@ -140,12 +104,12 @@ cd night/gm-nightly-loop
 The guided installer creates private settings under `.gm/deployment/` and starts:
 
 - the official GBrain company dashboard at `http://localhost:3131/admin/`;
-- the Finegrain Nightly Loop console at `http://localhost:8787`;
+- the Finegrain training console at `http://localhost:8787`;
 - Postgres with pgvector on the internal Docker network.
 
 The default schedule is nightly at 02:00 UTC. `nightly`, `weekly`, `monthly`, `manual`, and `once` are supported. Configure cadence and time zone in `.gm/deployment/.env` before the first startup, or edit the generated training profile afterward.
 
-Already have a company GBrain? Keep it and point Finegrain Nightly Loop at its existing profile:
+Already have a company GBrain? Keep it and point Finegrain at its existing profile:
 
 ```bash
 cd night/gm-nightly-loop
@@ -206,7 +170,7 @@ Each run preserves its inputs, splits, generated records, critic decisions, chec
 ## Repository map
 
 ```text
-data/                         Part 1 GBrain skill compiler
+data/                         Dataset preparation and validation
 results/                      Shared product/ML result contracts
 night/run.py                  Root wrapper for one real cycle
 night/gm-nightly-loop/
@@ -217,6 +181,6 @@ night/gm-nightly-loop/
   tests/                      Nightly-loop verification suite
 ```
 
-Read [CONTRACT.md](CONTRACT.md) for the files shared by the product and model sides. The deeper [Finegrain Nightly Loop guide](night/gm-nightly-loop/README.md) documents capture rules, provider configuration, dataset artifacts, scheduling, and operational limits.
+Read [CONTRACT.md](CONTRACT.md) for the files shared by the product and model sides. The deeper [Finegrain operations guide](night/gm-nightly-loop/README.md) documents capture rules, provider configuration, dataset artifacts, scheduling, and operational limits.
 
 MIT License.
