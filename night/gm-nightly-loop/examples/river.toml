@@ -1,0 +1,48 @@
+# Uses only fictional company pages. RIVER_API_KEY comes from the environment.
+[gm]
+tenant = "northstar-river"
+state_dir = "../.gm"
+
+[generation]
+teacher = "river"
+teacher_model = "nvidia/Kimi-K2.6-NVFP4"
+critic_model = "nvidia/GLM-5.2-NVFP4"
+max_generation_tokens = 8192
+
+[training]
+provider = "river"
+student_model = "Qwen/Qwen3.5-9B"
+lora_rank = 16
+sft_epochs = 1
+batch_size = 4
+learning_rate = 0.0001
+rl_steps = 2
+group_size = 4
+rl_learning_rate = 0.00001
+max_tokens = 1024
+max_context_tokens = 8192
+
+[quality]
+holdout_fraction = 0.2
+min_recall_gain = 0.05
+max_confident_wrong_increase = 0.0
+max_general_regression = 0.03
+min_score = 0.8
+min_train_tasks = 4
+min_eval_tasks = 4
+
+[schedule]
+cadence = "weekly"
+timezone = "America/Los_Angeles"
+hour = 2
+auto_train = false
+
+[[sources]]
+name = "gbrain"
+kind = "gbrain"
+path = "../fixtures/brain"
+previous_path = "../fixtures/previous"
+scope = "company"
+training_allowed = true
+include_visibility = ["brain-wide"]
+exclude_paths = ["personal/**", "hr/**", "compensation/**"]

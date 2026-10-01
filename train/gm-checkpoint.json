@@ -1,0 +1,22 @@
+{
+  "model": "GM",
+  "base_model": "Qwen/Qwen3.5-9B",
+  "lora_rank": 16,
+  "checkpoint": "river://cff34a73-b359-4692-ba33-93c3362c811f/weights/gm-v1-20260927-235027",
+  "inference_checkpoint": "river://cff34a73-b359-4692-ba33-93c3362c811f/sampler_weights/gm-v1-20260927-235027-infer",
+  "train_examples": 1872,
+  "validation_examples": 207,
+  "epochs": 2,
+  "batch_size": 32,
+  "learning_rate": 0.0001,
+  "steps": 118,
+  "first_loss_mean": 2.3402152061462402,
+  "last_loss_mean": 0.07562297582626343,
+  "train_seconds": 591,
+  "validation_check": {
+    "correct": 14,
+    "total": 20
+  },
+  "finished_at": "2026-09-27T23:51:41+00:00",
+  "validation_check_note": "rerun with thinking off; the first check during training sampled with thinking on and scored 2/20"
+}

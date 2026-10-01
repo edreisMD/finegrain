@@ -1,0 +1,12 @@
+{
+  "mock": true,
+  "night": 1,
+  "steps": [
+    { "id": "collect",  "status": "done",    "detail": "3 corrections, 2 workflows, 1 skill" },
+    { "id": "examples", "status": "done",    "detail": "60 new + 120 replay" },
+    { "id": "train",    "status": "running", "detail": "job abc123" },
+    { "id": "gate",     "status": "pending", "detail": "" },
+    { "id": "promote",  "status": "pending", "detail": "" }
+  ],
+  "before_after": { "prompt": "", "before": "", "after": "" }
+}

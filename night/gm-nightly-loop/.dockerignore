@@ -1,0 +1,9 @@
+**
+!pyproject.toml
+!README.md
+!LICENSE
+!src
+!src/gm_nightly
+!src/gm_nightly/**
+!deploy
+!deploy/entrypoint.py

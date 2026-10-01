@@ -1,0 +1,110 @@
+{
+  "mock": false,
+  "generated_at": "2026-09-27T23:54:37Z",
+  "tasks": [
+    "resolver-heldout",
+    "routing-eval-heldout"
+  ],
+  "task_sizes": {
+    "resolver-heldout": 5,
+    "routing-eval-heldout": 283
+  },
+  "task_max_accuracy": {
+    "resolver-heldout": 0.6,
+    "routing-eval-heldout": 1.0
+  },
+  "models": [
+    {
+      "name": "Base + resolver",
+      "model_id": "qwen/qwen3.5-9b",
+      "served_via": "openrouter.ai",
+      "providers": [
+        "Darkbloom",
+        "DeepInfra",
+        "Parasail",
+        "SiliconFlow",
+        "Together",
+        "Venice"
+      ],
+      "reasoning": "off",
+      "prompt_tokens": 5109,
+      "scores": {
+        "resolver-heldout": {
+          "accuracy": 0.6,
+          "p50_latency_ms": 1248,
+          "cost_per_task_usd": 0.000512,
+          "n": 5
+        },
+        "routing-eval-heldout": {
+          "accuracy": 0.8799,
+          "p50_latency_ms": 868,
+          "cost_per_task_usd": 0.000516,
+          "n": 283
+        }
+      }
+    },
+    {
+      "name": "Base",
+      "model_id": "qwen/qwen3.5-9b",
+      "served_via": "openrouter.ai",
+      "providers": [
+        "Darkbloom",
+        "DeepInfra",
+        "Parasail",
+        "SiliconFlow",
+        "Together",
+        "Venice"
+      ],
+      "reasoning": "off",
+      "prompt_tokens": 45,
+      "scores": {
+        "resolver-heldout": {
+          "accuracy": 0.2,
+          "p50_latency_ms": 573,
+          "cost_per_task_usd": 4e-06,
+          "n": 5
+        },
+        "routing-eval-heldout": {
+          "accuracy": 0.0177,
+          "p50_latency_ms": 640,
+          "cost_per_task_usd": 5e-06,
+          "n": 283
+        }
+      }
+    },
+    {
+      "name": "GM",
+      "model_id": "river://cff34a73-b359-4692-ba33-93c3362c811f/weights/gm-v1-20260927-235027",
+      "served_via": "api.river.ai",
+      "providers": [
+        "river"
+      ],
+      "reasoning": "off",
+      "prompt_tokens": 45,
+      "scores": {
+        "resolver-heldout": {
+          "accuracy": 0.4,
+          "p50_latency_ms": 3078,
+          "cost_per_task_usd": null,
+          "n": 5
+        },
+        "routing-eval-heldout": {
+          "accuracy": 0.8445,
+          "p50_latency_ms": 2552,
+          "cost_per_task_usd": null,
+          "n": 283
+        }
+      }
+    }
+  ],
+  "garry_baselines": {
+    "opus": 0.8667,
+    "sonnet": 1.0,
+    "haiku": 1.0
+  },
+  "garry_baselines_scoring": "strict, held-out, functional-areas variant, 3 seeds",
+  "leak_check": {
+    "training_pairs": 2079,
+    "leaked": 0
+  }
+}
